@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Imgur.cs" />
+    <Compile Include="ImgurAlbum.cs" />
     <Compile Include="ImgurException.cs" />
     <Compile Include="ImgurImage.cs" />
     <Compile Include="ImgurStats.cs" />

@@ -36,13 +36,16 @@ namespace ImgurDotNet
         {
             var image = (IDictionary<string, object>)data["image"];
             var links = (IDictionary<string, object>)data["links"];
+            string imgName = image.ContainsKey("name") ? (string)image["name"] :null;
+            string deleteHash = image.ContainsKey("deletehash") ? (string)image["deletehash"] : null;
+            Uri deleteUrl = image.ContainsKey("delete_page") ? new Uri((string)image["delete_page"]) : null;
             return new ImgurImage
             {
-                Name = (string)image["name"],
+                Name = imgName,
                 Title = (string)image["title"],
                 Caption = (string)image["caption"],
                 Hash = (string)image["hash"],
-                DeleteHash = (string)image["deletehash"],
+                DeleteHash = deleteHash,
                 DateTime = DateTime.Parse((string)image["datetime"]),
                 Type = (string)image["type"],
                 Animated = Convert.ToBoolean(image["animated"]),
@@ -53,7 +56,7 @@ namespace ImgurDotNet
                 Bandwith = Convert.ToInt32(image["bandwidth"]),
                 OriginalUrl = new Uri((string)links["original"]),
                 ImgurUrl = new Uri((string)links["imgur_page"]),
-                DeleteUrl = new Uri((string)links["delete_page"]),
+                DeleteUrl = deleteUrl,
                 SmallSquareUrl = new Uri((string)links["small_square"]),
                 LargeThumbnail = new Uri((string)links["large_thumbnail"])
             };

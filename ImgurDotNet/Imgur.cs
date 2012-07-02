@@ -16,6 +16,7 @@ namespace ImgurDotNet
         private static readonly string STATS_URL = "api.imgur.com/2/stats.json?view={0}";
         private static readonly string ALBUM_URL = "api.imgur.com/2/album/{0}.json";
         private static readonly string IMAGE_URL = "api.imgur.com/2/image/{0}.json";
+        private static readonly string DELETE_URL = "api.imgur.com/2/delete/{0}.json";
 
         private string key;
         public string Key
@@ -100,6 +101,44 @@ namespace ImgurDotNet
                 return ImgurStats.Create((IDictionary<string, object>)first.Value);
             else
                 throw new Exception("Couldn't parse response: " + first.Key);
+        }
+
+        public ImgurAlbum GetAlbum(string albumId)
+        {
+            var response = Imgur.GetParsedJsonResponse(this.GetProtocol() + String.Format(Imgur.ALBUM_URL, albumId));
+            var first = response.First();
+            if (first.Key == "error")
+                throw ImgurException.Create((IDictionary<string, object>)first.Value);
+            else if (first.Key == "album")
+                return ImgurAlbum.Create((IDictionary<string, object>)first.Value);
+            else
+                throw new Exception("Couldn't parse response: " + first.Key);
+        }
+
+        public ImgurImage GetImage(string imageId)
+        {
+            var response = Imgur.GetParsedJsonResponse(this.GetProtocol() + String.Format(Imgur.IMAGE_URL, imageId));
+            var parsed = (IDictionary<string, object>)response["image"];
+            var first = parsed.First();
+            if (first.Key == "error")
+                throw ImgurException.Create(parsed);
+            else if (first.Key == "image")
+                return ImgurImage.Create(parsed);
+            else
+                throw new Exception("Couldn't parse response: " + first.Key);
+        }
+
+        public void DeleteImage(string deleteHash)
+        {
+            var response = Imgur.GetParsedJsonResponse(this.GetProtocol() + String.Format(Imgur.DELETE_URL, deleteHash));
+            var first = response.First();
+            if (first.Key == "error")
+                throw ImgurException.Create((IDictionary<string, object>)first.Value);
+        }
+
+        public void DeleteImage(ImgurImage img)
+        {
+            this.DeleteImage(img.DeleteHash);
         }
 
         private string GetProtocol()
